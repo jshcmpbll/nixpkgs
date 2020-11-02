@@ -45,6 +45,7 @@
   ./hardware/cpu/amd-microcode.nix
   ./hardware/cpu/intel-microcode.nix
   ./hardware/digitalbitbox.nix
+  ./hardware/decklink.nix
   ./hardware/device-tree.nix
   ./hardware/i2c.nix
   ./hardware/sensor/hddtemp.nix
