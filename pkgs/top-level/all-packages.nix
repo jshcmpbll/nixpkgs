@@ -1179,6 +1179,8 @@ in
 
   bitwarden_rs-vault = callPackage ../tools/security/bitwarden_rs/vault.nix { };
 
+  blackmagicDesktopVideo = callPackage ../tools/video/blackmagic-desktop-video { };
+
   blockbench-electron = callPackage ../applications/graphics/blockbench-electron { };
 
   bmap-tools = callPackage ../tools/misc/bmap-tools { };
