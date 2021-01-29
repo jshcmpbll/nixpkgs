@@ -1182,6 +1182,8 @@ in
 
   cyclone-scheme = callPackage ../development/interpreters/cyclone { };
 
+  davinci = callPackage ../applications/video/davinci { };
+
   deltachat-electron = callPackage
     ../applications/networking/instant-messengers/deltachat-electron { };
 
