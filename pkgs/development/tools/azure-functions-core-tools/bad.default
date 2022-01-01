@@ -1,0 +1,99 @@
+{ stdenv
+, lib
+, config
+, fetchgit 
+, unzip
+, makeWrapper
+, icu
+, libunwind
+, curl
+, zlib
+, libuuid
+, dotnetbuildhelpers
+, dotnetCorePackages
+, dotnetPackages
+, dotnet-sdk
+, coreclr
+, openssl
+, nodejs-14_x
+, fetchurl
+}:
+
+let
+
+  dotnet-sdk = dotnetCorePackages.sdk_5_0;
+
+  deps = import ./deps.nix { inherit fetchurl; };
+
+in
+
+stdenv.mkDerivation rec {
+  pname = "azure-functions-core-tools";
+  version = "4.0.3971";
+
+  src = fetchgit {
+    url = git://github.com/Azure/azure-functions-core-tools;
+    rev = version;
+    sha256 = "0gaxhbl1vyf9d76392nzqvaz8avz4inslhvd142ad2wy3xanpvab";
+  };
+
+  buildInputs = [
+    unzip
+    makeWrapper
+    dotnetbuildhelpers
+    dotnet-sdk
+    dotnetPackages.Nuget
+  ];
+
+  nativeBuildInputs = [
+    icu
+    libunwind
+    curl
+    zlib
+    dotnet-sdk
+  ];
+
+  libPath = lib.makeLibraryPath [
+    libunwind
+    libuuid
+    stdenv.cc.cc
+    curl
+    zlib
+    icu
+    openssl
+  ];
+
+  installPhase = ''
+    export DOTNET_CLI_TELEMETRY_OPTOUT=1
+    export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+    export HOME=$PWD/home
+    sed -i 's/\/bin\/bash/\/bin\/sh/g' src/Azure.Functions.Cli/Common/CommandChecker.cs
+    nuget sources Disable -Name "nuget.org"
+    for package in ${toString deps}; do
+      nuget add $package -Source nixos
+    done
+    dotnet restore --source nixos
+
+    mkdir -p $out/bin
+
+    #dotnet publish src/Azure.Functions.Cli/Azure.Functions.Cli.csproj --runtime linux-x64 --output $out/bin
+
+    
+    #cp -prd *.dll *.so gozip func $out/bin
+    patchelf \
+      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+      --set-rpath "${libPath}" "$out/bin/func"
+    chmod +x $out/bin/func $out/bin/gozip
+    find $out/bin -type f -name "*.so" -exec patchelf --set-rpath "${libPath}" {} \;
+    wrapProgram "$out/bin/func" --prefix LD_LIBRARY_PATH : ${libPath}
+  '';
+  dontStrip = true; # Causes rpath patching to break if not set
+
+  meta = with lib; {
+    homepage = "https://github.com/Azure/azure-functions-core-tools";
+    description = "Command line tools for Azure Functions";
+    license = licenses.mit;
+    maintainers = with maintainers; [ jshcmpbll ];
+    platforms = platforms.linux;
+  };
+}
