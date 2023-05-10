@@ -11,6 +11,8 @@
 , libimobiledevice-glue
 , SystemConfiguration
 , CoreFoundation
+, findutils
+, gnused 
 }:
 
 stdenv.mkDerivation rec {
@@ -25,6 +27,13 @@ stdenv.mkDerivation rec {
     rev = "12394bc7be588be83c352d7441102072a89dd193";
     hash = "sha256-2K4gZrFnE4hlGlthcKB4n210bTK3+6NY4TYVIoghXJM=";
   };
+
+  prePatch = ''
+    sed -i 's/3000/9000/g' src/property_list_service.c
+    sed -i 's/3000/9000/g' src/service.c
+    pwd
+    echo "done josh123"
+  '';
 
   postPatch = ''
     echo '${version}' > .tarball-version
