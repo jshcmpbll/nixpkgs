@@ -22784,6 +22784,8 @@ with pkgs;
 
   ndi = callPackage ../development/libraries/ndi { };
 
+  ndi-monitor = callPackage ../applications/video/ndi-monitor { };
+
   neardal = callPackage ../development/libraries/neardal { };
 
   neatvnc = callPackage ../development/libraries/neatvnc { };
