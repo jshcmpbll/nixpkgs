@@ -35,6 +35,11 @@ let
     version = "7.0";
     hash = "sha256-RdDfv+0y90XpgjIRvTjsemKyGunzDbsh4j4WiE9rfyM=";
   };
+
+  ndi = {
+    version = "5.1";
+    hash = "sha256-kzGktFUI93V6/MVcNGB/k7zDgqwgyT/wD6M9d4FGbyg=";
+  };
 in
 
 rec {
@@ -45,6 +50,7 @@ rec {
   ffmpeg_5 = mkFFmpeg v5 "small";
   ffmpeg_5-headless = mkFFmpeg v5 "headless";
   ffmpeg_5-full = mkFFmpeg v5 "full";
+  ffmpeg_5-ndi = mkFFmpeg ndi "ndi";
 
   ffmpeg_6 = mkFFmpeg v6 "small";
   ffmpeg_6-headless = mkFFmpeg v6 "headless";

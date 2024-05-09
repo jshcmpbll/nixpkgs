@@ -27,7 +27,9 @@
   # If you need to depend on ffmpeg-full because ffmpeg is missing some feature
   # your package needs, you should enable that feature in regular ffmpeg
   # instead.
-, withFullDeps ? ffmpegVariant == "full"
+, withFullDeps ? ffmpegVariant == "full" || ffmpegVariant == "ndi"
+
+, withNDI ? ffmpegVariant == "ndi"
 
 , fetchgit
 , fetchpatch2
@@ -276,6 +278,7 @@
 , libXext
 , libxml2
 , libXv
+, ndi ? withNDI
 , nv-codec-headers
 , nv-codec-headers-12
 , ocl-icd # OpenCL ICD
@@ -341,7 +344,7 @@ let
 in
 
 
-assert lib.elem ffmpegVariant [ "headless" "small" "full" ];
+assert lib.elem ffmpegVariant [ "headless" "small" "full" "ndi" ];
 
 /*
  *  Licensing dependencies
@@ -446,6 +449,13 @@ stdenv.mkDerivation (finalAttrs: {
         name = "fate_avoid_dependency_on_samples";
         url = "https://git.ffmpeg.org/gitweb/ffmpeg.git/patch/7b7b7819bd21cc92ac07f6696b0e7f26fa8f9834";
         hash = "sha256-TKI289XqtG86Sj9s7mVYvmkjAuRXeK+2cYYEDkg6u6I=";
+      }
+    ])
+    ++ (lib.optionals withNDI [
+      {
+        name = "libndi.patch";
+        url = "https://raw.githubusercontent.com/lplassman/FFMPEG-NDI/master/libndi.patch";
+        hash = "sha256-Ou3teaC/RYvwKuou3XXUiZi3NttsD1f3j17hAueyAZg=";
       }
     ]));
 
