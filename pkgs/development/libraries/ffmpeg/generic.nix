@@ -27,7 +27,9 @@
   # If you need to depend on ffmpeg-full because ffmpeg is missing some feature
   # your package needs, you should enable that feature in regular ffmpeg
   # instead.
-, withFullDeps ? ffmpegVariant == "full"
+, withFullDeps ? ffmpegVariant == "full" || ffmpegVariant == "ndi"
+
+, withNDI ? ffmpegVariant == "ndi"
 
 , fetchgit
 , fetchpatch2
@@ -280,6 +282,7 @@
 , libXext
 , libxml2
 , libXv
+, ndi ? withNDI
 , nv-codec-headers
 , nv-codec-headers-12
 , ocl-icd # OpenCL ICD
@@ -347,7 +350,7 @@ let
 in
 
 
-assert lib.elem ffmpegVariant [ "headless" "small" "full" ];
+assert lib.elem ffmpegVariant [ "headless" "small" "full" "ndi" ];
 
 /*
  *  Licensing dependencies
@@ -460,7 +463,14 @@ stdenv.mkDerivation (finalAttrs: {
         url = "https://gitlab.archlinux.org/archlinux/packaging/packages/ffmpeg/-/raw/a02c1a15706ea832c0d52a4d66be8fb29499801a/add-av_stream_get_first_dts-for-chromium.patch";
         hash = "sha256-DbH6ieJwDwTjKOdQ04xvRcSLeeLP2Z2qEmqeo8HsPr4=";
       })
-    ];
+    ]
+    ++ (lib.optionals withNDI [
+      {
+        name = "libndi.patch";
+        url = "https://raw.githubusercontent.com/lplassman/FFMPEG-NDI/master/libndi.patch";
+        hash = "sha256-Ou3teaC/RYvwKuou3XXUiZi3NttsD1f3j17hAueyAZg=";
+      }
+    ]));
 
   configurePlatforms = [];
   setOutputFlags = false; # Only accepts some of them
