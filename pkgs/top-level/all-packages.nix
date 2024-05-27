@@ -1743,7 +1743,11 @@ with pkgs;
 
   davinci-resolve = callPackage ../applications/video/davinci-resolve { };
 
+  davinci-resolve-beta = callPackage ../applications/video/davinci-resolve { betaVariant = true; };
+
   davinci-resolve-studio = callPackage ../applications/video/davinci-resolve { studioVariant = true; };
+
+  davinci-resolve-studio-beta = callPackage ../applications/video/davinci-resolve { betaVariant = true; studioVariant = true; };
 
   dehinter = with python3Packages; toPythonApplication dehinter;
 

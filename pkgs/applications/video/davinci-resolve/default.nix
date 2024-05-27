@@ -25,6 +25,7 @@
 , jq
 
 , studioVariant ? false
+, betaVariant ? false
 
 , common-updater-scripts
 , writeShellApplication
@@ -34,7 +35,7 @@ let
   davinci = (
     stdenv.mkDerivation rec {
       pname = "davinci-resolve${lib.optionalString studioVariant "-studio"}";
-      version = "18.6.6";
+      version = if betaVariant then "19.0b3" else "18.6.6";
 
       nativeBuildInputs = [
         (appimage-run.override { buildFHSEnv = buildFHSEnvChroot; } )
@@ -54,9 +55,12 @@ let
           outputHashMode = "recursive";
           outputHashAlgo = "sha256";
           outputHash =
-            if studioVariant
-            then "sha256-9iTdIjHH8uoXlVr6miyqmHuzbbpbqdJPEbPGycsccoI="
-            else "sha256-WrIQ1FHm65MOGb5HfFl2WzXYJRlqktuZdrtzcjWp1gI=";
+            if studioVariant then
+              if betaVariant then "sha256-Y6QmlIINoO1IYr/S4cepjx506l+QVle6cfY/WL0McKw="
+              else "sha256-9iTdIjHH8uoXlVr6miyqmHuzbbpbqdJPEbPGycsccoI="
+            else
+              if betaVariant then "sha256-de4GCTzWb7v6rC11sxD+17MEUfNa7aAzIiZ3t4N//LM="
+              else "sha256-WrIQ1FHm65MOGb5HfFl2WzXYJRlqktuZdrtzcjWp1gI=";
 
           impureEnvVars = lib.fetchers.proxyImpureEnvVars;
 
@@ -70,7 +74,15 @@ let
           DOWNLOADSURL = "https://www.blackmagicdesign.com/api/support/us/downloads.json";
           SITEURL = "https://www.blackmagicdesign.com/api/register/us/download";
           PRODUCT = "DaVinci Resolve${lib.optionalString studioVariant " Studio"}";
-          VERSION = version;
+          VERSION = if betaVariant then
+                      (v: let
+                        parts = lib.splitString "." v;
+                        major = lib.head parts;
+                        minor = lib.last parts;
+                        beta = lib.last (lib.splitString "b" minor);
+                      in
+                        "${major} Beta ${beta}") version
+                    else version;
 
           USERAGENT = builtins.concatStringsSep " " [
             "User-Agent: Mozilla/5.0 (X11; Linux ${stdenv.hostPlatform.linuxArch})"
@@ -94,7 +106,7 @@ let
         } ''
         DOWNLOADID=$(
           curl --silent --compressed "$DOWNLOADSURL" \
-            | jq --raw-output '.downloads[] | select(.name | test("^'"$PRODUCT $VERSION"'( Update)?$")) | .urls.Linux[0].downloadId'
+            | jq --raw-output '.downloads[] | select(.urls.Linux) | .urls.Linux[] | select(.downloadTitle | test("^'"$PRODUCT $VERSION"'( Update)?$")) | .downloadId'
         )
         echo "downloadid is $DOWNLOADID"
         test -n "$DOWNLOADID"
