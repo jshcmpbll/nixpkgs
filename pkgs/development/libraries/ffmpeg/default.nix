@@ -33,8 +33,8 @@ let
   };
 
   ndi = {
-    version = "5.1";
-    hash = "sha256-kzGktFUI93V6/MVcNGB/k7zDgqwgyT/wD6M9d4FGbyg=";
+    version = "7.0.1";
+    hash = "sha256-HiCT6bvLx4zmJ6ffutoimdz5ENQ55CRF64WBT3HeXMA=";
   };
 in
 
@@ -46,13 +46,12 @@ rec {
   ffmpeg_4-headless = mkFFmpeg v4 "headless";
   ffmpeg_4-full = mkFFmpeg v4 "full";
 
-  ffmpeg_5-ndi = mkFFmpeg ndi "ndi";
-
   ffmpeg_6 = mkFFmpeg v6 "small";
   ffmpeg_6-headless = mkFFmpeg v6 "headless";
   ffmpeg_6-full = mkFFmpeg v6 "full";
 
   ffmpeg_7 = mkFFmpeg v7 "small";
+  ffmpeg_7-ndi = mkFFmpeg v7 "ndi";
   ffmpeg_7-headless = mkFFmpeg v7 "headless";
   ffmpeg_7-full = mkFFmpeg v7 "full";
 
@@ -61,6 +60,7 @@ rec {
   # Packages which use ffmpeg as a library, should pin to the relevant major
   # version number which the upstream support.
   ffmpeg = ffmpeg_6;
+  ffmpeg-ndi = ffmpeg_7-ndi;
   ffmpeg-headless = ffmpeg_6-headless;
   ffmpeg-full = ffmpeg_6-full;
 }

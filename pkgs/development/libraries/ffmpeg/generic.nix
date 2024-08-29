@@ -464,13 +464,14 @@ stdenv.mkDerivation (finalAttrs: {
         hash = "sha256-DbH6ieJwDwTjKOdQ04xvRcSLeeLP2Z2qEmqeo8HsPr4=";
       })
     ]
-    ++ (lib.optionals withNDI [
-      {
+    ++ optionals (lib.optionals withNDI [
+      (fetchpatch2 {
         name = "libndi.patch";
-        url = "https://raw.githubusercontent.com/lplassman/FFMPEG-NDI/master/libndi.patch";
+        #url = "https://raw.githubusercontent.com/lplassman/FFMPEG-NDI/master/libndi.patch";
+        url = "https://framagit.org/tytan652/ffmpeg-ndi-patch/-/raw/master/master_Revert-lavd-Remove-libndi_newtek.patch";
         hash = "sha256-Ou3teaC/RYvwKuou3XXUiZi3NttsD1f3j17hAueyAZg=";
       }
-    ]));
+    )]);
 
   configurePlatforms = [];
   setOutputFlags = false; # Only accepts some of them

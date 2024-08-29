@@ -19986,7 +19986,6 @@ with pkgs;
     ffmpeg_4
     ffmpeg_4-headless
     ffmpeg_4-full
-    ffmpeg_5-ndi
     ffmpeg_6
     ffmpeg_6-headless
     ffmpeg_6-full
@@ -19994,6 +19993,7 @@ with pkgs;
     ffmpeg_7-headless
     ffmpeg_7-full
     ffmpeg
+    ffmpeg-ndi
     ffmpeg-headless
     ffmpeg-full;
 
